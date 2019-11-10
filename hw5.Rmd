@@ -1,0 +1,36 @@
+---
+title: "hw5"
+author: "YuaoYang"
+date: "2019/11/10"
+output: github_document
+---
+
+
+# Problem 1
+```{r}
+
+library(tidyverse)
+
+set.seed(10)
+
+iris_with_missing = iris %>% 
+  map_df(~replace(.x, sample(1:150, 20), NA)) %>%
+  mutate(Species = as.character(Species))
+```
+
+```{r}
+fill_miss = function(x) {
+  if(is.numeric(x)){
+    x = replace_na(x, round(mean(x, na.rm = TRUE),2))
+  }else if(is.character(x)){
+    x = replace_na(x, "virginica")
+  }
+}
+
+new_iris = map(iris_with_missing, fill_miss) %>%
+  data.frame()
+
+
+```
+
+#Problem 2
