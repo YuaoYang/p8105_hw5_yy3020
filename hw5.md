@@ -9,14 +9,14 @@ YuaoYang
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ----------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
 
     ## √ ggplot2 3.2.1     √ purrr   0.3.2
     ## √ tibble  2.1.3     √ dplyr   0.8.3
     ## √ tidyr   1.0.0     √ stringr 1.4.0
     ## √ readr   1.3.1     √ forcats 0.4.0
 
-    ## -- Conflicts -------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -42,3 +42,29 @@ new_iris = map(iris_with_missing, fill_miss) %>%
 ```
 
 \#Problem 2
+
+``` r
+file_name = list.files(path = "./data/",full.names = TRUE) 
+ 
+read_data = purrr::map(file_name, read.csv) %>%
+  bind_rows() %>%
+  mutate(subject_id = str_sub(file_name,8,13),
+         arm = ifelse(str_detect(subject_id, "con"),"control_arm", "experimental_arm")) %>%
+  select(subject_id, arm, week_1:week_8) %>%
+  pivot_longer(cols = 3:10, names_to = "week",names_prefix = "week_",values_to = "value") %>%
+  mutate(arm = factor(arm, levels = c("control_arm", "experimental_arm")))
+```
+
+``` r
+read_data %>%
+  group_by(week) %>%
+ggplot(aes(x = week, y = value, group = subject_id, color = subject_id))+
+  geom_line() + labs(title = "spaghetti plot of each observation over time") +
+   facet_grid(. ~ arm)
+```
+
+![](hw5_files/figure-gfm/unnamed-chunk-4-1.png)<!-- --> From the plot, i
+find the abservational value in experimental arm group are bigger than
+it in control arm group in overall trend.
+
+\#Problem 3

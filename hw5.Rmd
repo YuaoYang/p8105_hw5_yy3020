@@ -34,3 +34,29 @@ new_iris = map(iris_with_missing, fill_miss) %>%
 ```
 
 #Problem 2
+
+```{r}
+
+file_name = list.files(path = "./data/",full.names = TRUE) 
+ 
+read_data = purrr::map(file_name, read.csv) %>%
+  bind_rows() %>%
+  mutate(subject_id = str_sub(file_name,8,13),
+         arm = ifelse(str_detect(subject_id, "con"),"control_arm", "experimental_arm")) %>%
+  select(subject_id, arm, week_1:week_8) %>%
+  pivot_longer(cols = 3:10, names_to = "week",names_prefix = "week_",values_to = "value") %>%
+  mutate(arm = factor(arm, levels = c("control_arm", "experimental_arm")))
+
+```
+
+```{r}
+read_data %>%
+  group_by(week) %>%
+ggplot(aes(x = week, y = value, group = subject_id, color = subject_id))+
+  geom_line() + labs(title = "spaghetti plot of each observation over time") +
+   facet_grid(. ~ arm)
+
+```
+From the plot, i find the abservational value in experimental arm group are bigger than it in control arm group in overall trend.
+
+#Problem 3
