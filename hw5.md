@@ -41,7 +41,7 @@ new_iris = map(iris_with_missing, fill_miss) %>%
   data.frame()
 ```
 
-\#Problem 2
+# Problem 2
 
 ``` r
 file_name = list.files(path = "./data/",full.names = TRUE) 
@@ -67,7 +67,7 @@ ggplot(aes(x = week, y = value, group = subject_id, color = subject_id))+
 find the abservational value in experimental arm group are bigger than
 it in control arm group in overall trend.
 
-\#Problem 3
+# Problem 3
 
 ``` r
 set.seed(2)
@@ -82,12 +82,12 @@ sim_regression = function(n = 30, beta0 = 2, beta1, variance = 50) {
   ls_fit = broom::tidy (lm(y ~ x, data = sim_data))
 }
 
-
+# i try to use beta1 = 0 to check the null hypothesis
 result_1  = rerun(10000, sim_regression(beta1 = 0)) %>% 
   bind_rows() %>% 
   filter(term == "x") %>%
   select(estimate, p.value)
-
+# i try to use beta1 = 1:6 to try the linear funciton
 result_2  = 
   tibble(beta1 = 1:6) %>% 
   mutate(beta1_new = map(.x = beta1, ~rerun(10000,sim_regression(beta1 =.x)))) %>% 
@@ -134,11 +134,11 @@ total = sim_result %>%
   summarize(mean_beta1 = mean(estimate)) %>%
   mutate(group = "total")
   
-  ggplot(total, aes(x= beta1, y = mean_beta1)) + geom_point()+ geom_line()+
+ggplot(total, aes(x= beta1, y = mean_beta1)) + geom_point()+ geom_line()+
    scale_x_continuous(
     breaks = c(1,2,3,4,5,6)) + labs(y = "average estimate of beta1",
                                     x = "true value of beta1",
-       title ="the plot of relation between estimate and true beta1")
+       title ="the plot of relation between estimate and true beta1 in total")
 ```
 
 ![](hw5_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -152,12 +152,12 @@ reject_null = sim_result %>%
   summarize(mean_beta1 = mean(estimate)) %>%
   mutate(group = "reject")
 
-  ggplot(reject_null, aes(x= beta1, y = mean_beta1)) + geom_point()+geom_line() +
+ggplot(reject_null, aes(x= beta1, y = mean_beta1)) + geom_point()+geom_line() +
    scale_x_continuous(
     breaks = c(1,2,3,4,5,6)) +
   labs(y = "average estimate of beta1",
         x = "true value of beta1",
-       title ="the plot of relation between estimate and true beta1")
+       title ="the plot of relation between estimate and true beta1 in rejeted null")
 ```
 
 ![](hw5_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
